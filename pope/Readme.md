@@ -9,8 +9,16 @@
 
 最好把这三个文件转化为jsonl，但是scripts的问题，不需要管，就用json文件就可以了
 
-# 使用镜像源下载
+# 切换到pope目录
+cd /root/autodl-tmp/eval/pope
+
+# 使用镜像源下载coco val2014数据集
+
 wget http://images.cocodataset.org/zips/val2014.zip
+
+或者使用nohup挂到后台并且保存log
+
+nohup wget http://images.cocodataset.org/zips/val2014.zip > download.log 2>&1 &
 
 # 解压
 unzip val2014.zip -d /root/autodl-tmp/val2014
