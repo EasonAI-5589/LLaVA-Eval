@@ -110,3 +110,5 @@ Answer the question using a single word or phrase.
 ```
 
 LLaVA 将原始问题中的 `Please answer yes or no.` 替换为换行后追加 `Answer the question using a single word or phrase.`。
+
+注意：`convert_answer_to_mme.py` 会自动将 prompt 转回标准 MME 格式以匹配 GT，因此两种 jsonl 都能正确评测。
