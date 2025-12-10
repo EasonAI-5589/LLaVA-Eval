@@ -59,7 +59,7 @@ def eval_pope(answers, label_file):
     print('F1 score: {}'.format(f1))
     print('Yes ratio: {}'.format(yes_ratio))
     print('%.3f, %.3f, %.3f, %.3f, %.3f' % (f1, acc, precision, recall, yes_ratio))
-
+    return f1
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--annotation-dir", type=str)
@@ -70,6 +70,7 @@ if __name__ == "__main__":
     questions = [json.loads(line) for line in open(args.question_file)]
     questions = {question['question_id']: question for question in questions}
     answers = [json.loads(q) for q in open(args.result_file)]
+    f1_scores = []
     for file in os.listdir(args.annotation_dir):
         assert file.endswith('.json')
         if file.startswith('coco_pope_'):
@@ -83,5 +84,6 @@ if __name__ == "__main__":
         cur_answers = [x for x in answers if questions[x['question_id']]['category'] == category]
         cur_answers.sort(key=lambda x: x['question_id'])  # 按 question_id 排序，确保与 label_file 顺序一致
         print('Category: {}, # samples: {}'.format(category, len(cur_answers)))
-        eval_pope(cur_answers, os.path.join(args.annotation_dir, file))
+        f1_scores.append(eval_pope(cur_answers, os.path.join(args.annotation_dir, file)))
         print("====================================")
+    print('Average F1 score: {}'.format(sum(f1_scores) / len(f1_scores)))
