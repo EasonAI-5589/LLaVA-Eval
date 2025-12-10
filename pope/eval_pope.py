@@ -8,7 +8,6 @@ def eval_pope(answers, label_file):
     for answer in answers:
         text = answer['text']
 
-        # Only keep the first sentence
         if text.find('.') != -1:
             text = text.split('.')[0]
 
@@ -73,13 +72,12 @@ if __name__ == "__main__":
     answers = [json.loads(q) for q in open(args.result_file)]
     for file in os.listdir(args.annotation_dir):
         assert file.endswith('.json')
-        # 支持 coco_pope_xxx.json, gqa_pope_xxx.json, aokvqa_pope_xxx.json 三种格式
         if file.startswith('coco_pope_'):
-            category = file[10:-5]  # len('coco_pope_') = 10
+            category = file[10:-5]
         elif file.startswith('gqa_pope_'):
-            category = file[9:-5]   # len('gqa_pope_') = 9
+            category = file[9:-5]
         elif file.startswith('aokvqa_pope_'):
-            category = file[12:-5]  # len('aokvqa_pope_') = 12
+            category = file[12:-5]
         else:
             category = file.split('_')[-1].replace('.json', '')
         cur_answers = [x for x in answers if questions[x['question_id']]['category'] == category]
