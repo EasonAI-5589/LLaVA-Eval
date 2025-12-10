@@ -2,8 +2,6 @@ import os
 import json
 import argparse
 
-
-
 def eval_pope(answers, label_file):
     label_list = [json.loads(q)['label'] for q in open(label_file, 'r')]
 
@@ -65,44 +63,26 @@ def eval_pope(answers, label_file):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--annotation-dir", default="/root/autodl-tmp/LLaVA/playground/data/eval/pope/coco",type=str)
-    parser.add_argument("--question-file", default="/root/autodl-tmp/LLaVA/playground/data/eval/pope/test.jsonl",type=str)
-    parser.add_argument("--result-file", default="/root/autodl-tmp/LLaVA/playground/data/eval/pope/answers/llava-v1.5-7b.jsonl",type=str)
+    parser.add_argument("--annotation-dir", type=str)
+    parser.add_argument("--question-file", type=str)
+    parser.add_argument("--result-file", type=str)
     args = parser.parse_args()
 
-    # 读取所有question和llava answers
-    questions_list = [json.loads(line) for line in open(args.question_file)]
+    questions = [json.loads(line) for line in open(args.question_file)]
+    questions = {question['question_id']: question for question in questions}
     answers = [json.loads(q) for q in open(args.result_file)]
-
-    # 对于question来说
-    # 1到3000行是adversarial
-    # 3001到6000行是popular
-    # 6001到9000行是random
-    adversarial_questions = questions_list[:3000]
-    popular_questions = questions_list[3000:6000]
-    random_questions = questions_list[6000:]
-
-    # 对于answer来说同理
-    # 1到3000行是adversarial
-    # 3001到6000行是popular
-    # 6001到9000行是random
-
-    adversarial_answers = answers[:3000]
-    popular_answers = answers[3000:6000]
-    random_answers = answers[6000:]
-
-    # 评估adversarial_answers
-    print("====================================")
-    print("Category: adversarial, # samples: {}".format(len(adversarial_answers)))
-    eval_pope(adversarial_answers, os.path.join(args.annotation_dir, 'coco_pope_adversarial.jsonl'))
-
-    # 评估popular_answers
-    print("====================================")
-    print("Category: popular, # samples: {}".format(len(popular_answers)))
-    eval_pope(popular_answers, os.path.join(args.annotation_dir, 'coco_pope_popular.jsonl'))
-
-    # 评估random_answers
-    print("====================================")
-    print("Category: random, # samples: {}".format(len(random_answers)))
-    
-    eval_pope(random_answers, os.path.join(args.annotation_dir, 'coco_pope_random.jsonl'))
+    for file in os.listdir(args.annotation_dir):
+        assert file.endswith('.json')
+        # 支持 coco_pope_xxx.json, gqa_pope_xxx.json, aokvqa_pope_xxx.json 三种格式
+        if file.startswith('coco_pope_'):
+            category = file[10:-5]  # len('coco_pope_') = 10
+        elif file.startswith('gqa_pope_'):
+            category = file[9:-5]   # len('gqa_pope_') = 9
+        elif file.startswith('aokvqa_pope_'):
+            category = file[12:-5]  # len('aokvqa_pope_') = 12
+        else:
+            category = file.split('_')[-1].replace('.json', '')
+        cur_answers = [x for x in answers if questions[x['question_id']]['category'] == category]
+        print('Category: {}, # samples: {}'.format(category, len(cur_answers)))
+        eval_pope(cur_answers, os.path.join(args.annotation_dir, file))
+        print("====================================")
