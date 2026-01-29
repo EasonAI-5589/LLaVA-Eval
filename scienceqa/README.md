@@ -1,41 +1,49 @@
+# ScienceQA Dataset
 
-https://github.com/lupantech/ScienceQA/blob/main/data/scienceqa/pid_splits.json
+## 说明
 
-https://github.com/lupantech/ScienceQA/blob/main/data/scienceqa/problems.json
+本目录包含 ScienceQA 数据集的测试集评估数据，直接 clone 仓库即可使用，无需额外下载。
 
-curl -X GET \
-     "https://datasets-server.huggingface.co/rows?dataset=derek-thomas%2FScienceQA&config=default&split=test&offset=0&length=100"
+## 已包含文件
 
+```
+scienceqa/
+├── images/test/          # 测试集图片（2180张）
+├── pid_splits.json       # 数据集划分信息
+├── problems.json         # 问题数据（31MB）
+├── llava_test_CQM-A.json # LLaVA 测试集格式
+└── answers/              # 答案目录
+```
 
-#!/bin/bash
+## 数据集信息
 
-# 创建目标文件夹
-mkdir -p sqa
+- **来源**: [ScienceQA](https://github.com/lupantech/ScienceQA)
+- **论文**: Learn to Explain: Multimodal Reasoning via Thought Chains for Science Question Answering (NeurIPS 2022)
+- **测试集规模**: 2,180 个多模态科学问答题
+- **许可证**: CC BY-NC-SA
 
-# 下载 pid_splits.json
-echo "Downloading pid_splits.json..."
-curl -L -o sqa/pid_splits.json https://github.com/lupantech/ScienceQA/raw/main/data/scienceqa/pid_splits.json
+## 使用方法
 
-# 下载 problems.json
-echo "Downloading problems.json..."
-curl -L -o sqa/problems.json https://github.com/lupantech/ScienceQA/raw/main/data/scienceqa/problems.json
+直接在代码中引用相对路径即可：
 
-# 使用 Hugging Face API 下载测试数据
-echo "Downloading test data from Hugging Face..."
-curl -X GET \
-     "https://datasets-server.huggingface.co/rows?dataset=derek-thomas%2FScienceQA&config=default&split=test&offset=0&length=100" \
-     -o sqa/test_data.json
+```python
+import json
 
-echo "Download complete. Files saved in the 'sqa' folder."
+# 加载问题数据
+with open('scienceqa/problems.json', 'r') as f:
+    problems = json.load(f)
 
+# 加载数据集划分
+with open('scienceqa/pid_splits.json', 'r') as f:
+    splits = json.load(f)
 
-     文件夹名字要改成sqa
+# 加载 LLaVA 格式的测试数据
+with open('scienceqa/llava_test_CQM-A.json', 'r') as f:
+    test_data = json.load(f)
+```
 
-     images/test
+## 参考链接
 
-https://drive.google.com/drive/folders/16kuhXdM-MOhYcFIyRj91WvnDnjnF-xHw
-
-下载test.zip
-
-
-curl -L -o test.zip "https://drive.google.com/uc?export=download&confirm=t&id=1mAOjwCmRtGpETsVvR2za48IjdnVHPMAx"
+- 官方仓库: https://github.com/lupantech/ScienceQA
+- 项目主页: https://scienceqa.github.io/
+- HuggingFace: https://huggingface.co/datasets/derek-thomas/ScienceQA
