@@ -32,3 +32,10 @@ echo "Download complete. Files saved in the 'sqa' folder."
      文件夹名字要改成sqa
 
      images/test
+
+https://drive.google.com/drive/folders/16kuhXdM-MOhYcFIyRj91WvnDnjnF-xHw
+
+下载test.zip
+
+
+curl -L -o test.zip "https://drive.google.com/uc?export=download&confirm=t&id=1mAOjwCmRtGpETsVvR2za48IjdnVHPMAx"
